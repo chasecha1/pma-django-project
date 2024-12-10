@@ -1,0 +1,72 @@
+/* UVA brand guide: https://brand.virginia.edu/design-assets/ */
+@font-face {
+    font-family: 'FranklinGothic';
+    src: url('../font/FranklinGothic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+h1{
+    color: #232D4B;
+    position: relative;
+    margin-top: 10px;
+    text-align: center;
+}
+
+form {
+    display: flex;
+    margin-top: 50px;
+    flex-direction: column;
+    align-items: center; /* Center contents horizontally */
+}
+
+body{
+    justify-content: center;
+    font-family: 'FranklinGothic', sans-serif;
+}
+.background-container {
+    padding-top: 30px;
+    background-image: url("../images/rotunda.jpg");
+    background-size: cover;
+    background-position: center;
+    padding: 20px;
+    background-color: white;
+    position: absolute;
+    margin-top: 3%;
+    margin-left: 10%;
+    width: 80%;
+    height: 80%;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.transparent-container {
+    background-color: rgba(255, 255, 255, 0.8); /* White with 80% opacity */
+    padding: 20px;
+    border-radius: 10px;
+    position: absolute;
+    margin-top: 5%;
+    margin-left: 12%;
+    width: 30%;
+    height: 70%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+
+}
+
+.custom-button {
+    background-color: #E57200; /* orange */
+    color: #232D4B; /* blue */
+    font-weight: bold;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.custom-button:hover {
+    background-color: #232D4B; /* blue */
+    color: #E57200; /* orange */
+}

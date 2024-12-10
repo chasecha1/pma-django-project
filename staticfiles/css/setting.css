@@ -1,0 +1,32 @@
+h1{
+    color: black;
+}
+
+.container {
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.setting-item {
+    margin-bottom: 20px;
+}
+
+.color-picker {
+    display: flex;
+    flex-direction: column;
+}
+
+.color-picker label {
+    margin-right: 10px;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.sidebar-item.add-event {
+    display: none;
+}

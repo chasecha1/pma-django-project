@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+{% extends 'ra_pma/base.html' %}
+{% block title %}Event Details{% endblock %}
+{% load static %}
+{% block content %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static '/css/event.css' %}">
+</head>
+<body>
+    <div class="d-flex">
+        <div class="main" id="event_background">
+            <div class="container mt-5">
+                <!-- Event Title -->
+                <h1 class="display-4 text-start mb-4">{{ event.title }}</h1>
+                <p class="lead text-muted">Event description: {{ event.description }}</p>
+                <p><strong>Date:</strong> {{ event.date }}</p>
+
+                <!-- Pending Requests -->
+                {% if user == event.user %}
+                    <h3>Pending Requests</h3>
+                    <div class="container mt-4">
+                        {% for user in event.requests.all %}
+                        <div class="request">
+                            <p>{{ user.username }} has requested to join the event.</p>
+                            <a href="{% url 'approve_request' event.id user.id %}" class="btn btn-primary btn-sm">Approve</a>
+                            <a href="{% url 'reject_request' event.id user.id %}" class="btn btn-danger btn-sm">Reject</a>
+                        </div>
+                        {% empty %}
+                            <p class="text-muted mb-0">No pending requests at this time.</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Uploaded Files Section -->
+                <h2 class="h4 mt-4">Uploaded Files:</h2>
+                <div class="file-list" style="max-height: 400px; overflow-y: auto;">
+                    <ul class="list-group">
+                        {% for file in files %}
+                        <li class="list-group-item file-item" id="file-{{ file.id }}">
+                            <i class="bi bi-file-earmark" style="font-size: 30px;"></i>
+                            <span class="ms-2 fw-bold">{{ file.title }}</span>
+
+                            <!-- Tooltip -->
+                            <i class="bi bi-exclamation-circle info-icon"
+                               data-bs-toggle="collapse"
+                               data-bs-target="#info{{ forloop.counter }}"
+                               aria-expanded="false"
+                               aria-controls="info{{ forloop.counter }}">
+                                <span class="tooltip-info">file info</span>
+                            </i>
+
+                            <!-- Collapsible Section -->
+                            <div class="collapse" id="info{{ forloop.counter }}">
+                                <div class="card card-body mt-2">
+                                    <p class="mb-1 text-muted"><strong>Description:</strong> {{ file.description }}</p>
+                                    <p><strong>Date:</strong> {{ file.uploaded_at|date:"F j, Y, g:i a" }}</p>
+                                    {% if file.keywords %}
+                                    <p><strong>Keywords:</strong>
+                                        {% for keyword in file.get_keywords %}
+                                            <span class="badge bg-secondary">{{ keyword }}</span>
+                                        {% endfor %}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- View and Delete Buttons -->
+                            <a href="{{ file.file.url }}" target="_blank" class="btn btn-primary btn-sm">View File</a>
+                            {% if file.user == request.user or request.user.userprofile.is_RA %}
+                                <button class="btn btn-danger btn-sm float-end" onclick="deleteFile({{ file.id }})">Delete File</button>
+                            {% endif %}
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">No files uploaded.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- File Upload Section (Only for non-RA users) -->
+                {% if not request.user.userprofile.is_RA %}
+                    <h2 class="h4 mt-5">Upload a File:</h2>
+                    <form method="post" enctype="multipart/form-data">
+
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <input type="hidden" name="file_upload" value="1">
+
+                            {{ file_form.as_p }}
+                        </div>
+                        <button type="submit" class="btn btn-primary mb-3">Upload</button>
+                    </form>
+                {% endif %}
+
+                <!-- Messages Section -->
+                <div class="messages-section mt-5">
+                    <h2 class="h4 mb-3">Messages:</h2>
+                    <ul class="list-group mb-4">
+                        {% for message in messages %}
+                        <li class="list-group-item">
+                            <strong>{{ message.user.username }}</strong>
+                            <small class="text-muted float-end">{{ message.uploaded_at|date:"F j, Y, g:i a" }}</small>
+                            <p class="mb-0">{{ message.message }}</p>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">No messages yet. Be the first to leave a message!</li>
+                        {% endfor %}
+                    </ul>
+
+                    <!-- Message Form -->
+                    {% if user in event.members.all or user == event.user %}
+                    <form method="post" class="mb-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="message_post" value="1">
+                        {{ message_form.as_p }}
+                        <button type="submit" class="btn btn-primary mb-3">Post Message</button>
+                    </form>
+                    {% endif %}
+                </div>
+
+                <!-- Leave Event Button -->
+                {% if user != event.user and user in event.members.all %}
+                <form action="{% url 'leave_event' event.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger mb-3">Leave Event</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Include JavaScript -->
+    <script>
+        // Function to delete a file
+        function deleteFile(fileId) {
+            if (confirm('Are you sure you want to delete this file?')) {
+                const url = `/events/delete_file/${fileId}/`;
+                const csrftoken = getCookie('csrftoken'); // Fetch CSRF token dynamically
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('File deleted successfully!');
+                        document.querySelector(`#file-${fileId}`).remove();
+                        location.reload()
+                    } else {
+                        return response.json().then(data => {
+                            alert(data.error || 'Failed to delete the file.');
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        // Function to get the CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Tooltip Hover Functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const tooltips = document.querySelectorAll('.tooltip-info');
+            tooltips.forEach(tooltip => {
+                const parent = tooltip.parentElement;
+                parent.addEventListener('mouseenter', () => {
+                    tooltip.style.opacity = '1';
+                });
+                parent.addEventListener('mouseleave', () => {
+                    setTimeout(() => {
+                        tooltip.style.opacity = '0';
+                    }, 1000); // Hide tooltip after 1 second
+                });
+            });
+        });
+    </script>
+</body>
+{% endblock %}

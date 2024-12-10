@@ -1,0 +1,63 @@
+<body>
+<aside id="sidebar" class="sidebar-toggle">
+    <a href="javascript:history.back()" class="back-arrow" title="go back">
+        <i class="bi bi-arrow-left-circle-fill"></i>
+    </a>
+    <a class="dash-title" href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'anonymous_view' %}{% endif %}"
+       data-bs-toggle="tooltip" data-bs-placement="right">
+        <div class="sidebar-logo">
+            User Dashboard
+        </div>
+    </a>
+    <!-- Sidebar Navigation -->
+    <ul class="sidebar-nav p-0">
+        <li class="sidebar-item dashboard">
+            <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'anonymous_view' %}{% endif %}"
+               class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+               data-bs-toggle="tooltip" data-bs-placement="right" title="dashboard">
+                <i class="bi bi-house"></i>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="{% url 'profile' %}"
+               class="sidebar-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}"
+               data-bs-toggle="tooltip" data-bs-placement="right" title="profile">
+                <i class="bi bi-person-circle"></i>
+                <span class="sidebar-text">Profile</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="{% url 'resources' %}"
+               class="sidebar-link {% if request.resolver_match.url_name == 'resources' %}active{% endif %}"
+               data-bs-toggle="tooltip" data-bs-placement="right" title="resources">
+                <i class="bi bi-person-lines-fill"></i>
+                <span class="sidebar-text">Resources</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="{% url 'setting' %}"
+               class="sidebar-link {% if request.resolver_match.url_name == 'setting' %}active{% endif %}"
+               data-bs-toggle="tooltip" data-bs-placement="right" title="settings">
+                <i class="bi bi-gear"></i>
+                <span class="sidebar-text">Settings</span>
+            </a>
+        </li>
+    </ul>
+    <div class="sidebar-footer">
+        <a href="#" class="sidebar-link" id="logout-link" data-bs-toggle="tooltip" data-bs-placement="right" title="log out">
+            <i class="bi bi-box-arrow-left"></i>
+            <span class="sidebar-text">Logout</span>
+        </a>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+            {% csrf_token %}
+        </form>
+    </div>
+    <script>
+        document.getElementById('logout-link').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default anchor behavior
+            document.getElementById('logout-form').submit(); // Submit the logout form
+            localStorage.removeItem('backgroundColor');
+        });
+    </script>
+</aside>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% extends 'ra_pma/base.html' %}
+{% block title %}Profile{% endblock %}
+{% load static %}
+{% block content %}
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static '/css/profile.css' %}">
+</head>
+<body>
+    <div class="container mt-5">
+<!--        <label for="photo-upload" class="upload-placeholder" id="upload-label">-->
+<!--            Click to upload-->
+<!--        </label>-->
+<!--        <input type="file" id="photo-upload" accept="image/*" onchange="previewPhoto(event)">-->
+        {% if user.is_authenticated %}
+            <h1>Profile</h1>
+            <ul class="container-fluid">
+                <li class="fixed-info">
+                    <span>Name:</span>
+                    <span class="info-value">{{ user.get_full_name }}</span>
+                </li>
+                <li class="fixed-info">
+                    <span>Email:</span>
+                    <span class="info-value">{{ user.email }}</span>
+                </li>
+                <li class="fixed-info">
+                    <span>Date Joined:</span>
+                    <span class="info-value">{{ user.date_joined|date:"F j, Y" }}</span>
+                </li>
+                <li class="fixed-info">
+                    <span>My Role is:</span>
+                    <span class="info-value">
+                            {% if user.userprofile.is_admin %}
+                                Admin
+                            {% elif user.userprofile.is_RA %}
+                                RA
+                            {% elif user.userprofile.is_SR %}
+                                SR
+                            {% else %}
+                                Common User
+                            {% endif %}
+                    </span>
+                </li>
+            </ul>
+        {% else %}
+            <h1>Hi, anonymous user!</h1>
+            <p>Please log in to see your profile.</p>
+        {% endif %}
+    </div>
+    <script src="{% static '/js/profile.js' %}" defer></script>
+</body>
+{% endblock %}

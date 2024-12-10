@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% extends 'ra_pma/base.html' %}
+{% block title %}404{% endblock %}
+{% load static %}
+{% block content %}
+<head>
+    <title>Page Not Found</title>
+</head>
+<body>
+    <h1 style="color: black; text-align: center;">Invalid Page</h1>
+    <p style="text-align: center;">
+        {% if error_code == 404 %}
+            The page you are looking for does not exist. Please check the URL and try again.
+        {% elif error_code == 403 %}
+            You do not have permission to access this page. Contact the administrator if you believe this is an error.
+        {% elif error_code == 500 %}
+            There is a server error. Please contact the administrator or try again.
+        {% elif error_code == 400 %}
+            There is a bad request. Please contact the administrator or try again.
+        {% else %}
+            Something went wrong. Please try again later.
+        {% endif %}
+    </p>
+</body>
+{% endblock %}

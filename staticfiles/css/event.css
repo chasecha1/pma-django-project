@@ -1,0 +1,67 @@
+@font-face {
+    font-family: 'FranklinGothic';
+    src: url('../font/FranklinGothic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+#sidebar .sidebar-item.add-event {
+    display: none !important;
+}
+
+.list-group-item a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.file-item {
+    transition: background-color 0.3s;
+
+}
+
+.file-item:hover {
+    background-color: #f0f0f0;
+}
+
+.btn-primary {
+    background-color: #232D4B !important;
+    color: white !important;
+    border-color: white;
+}
+
+.btn-primary:hover {
+    background-color: #E57200 !important;
+    color: white !important;
+    border-color: #E57200 !important;
+}
+
+
+h1 {
+    color: black;
+}
+
+.file-item .info-icon {
+    position: relative;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+
+textarea {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.container.mt-4 {
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid rgb(223, 226, 230);
+    padding: 10px;
+}
+
+.btn-danger.leave-btn {
+    margin-bottom: 10px;
+}
+
+

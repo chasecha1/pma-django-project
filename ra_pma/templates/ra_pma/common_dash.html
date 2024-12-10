@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+{% extends 'ra_pma/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% load static %}
+{% block content %}
+
+<head>
+    <title>Common User Dashboard</title>
+
+    <!-- Link to CSS files -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="icon" type="image/x-icon" href="{% static '/images/rot.jpg' %}">
+    <link rel="stylesheet" type="text/css" href="{% static '/css/common_dash.css' %}">
+</head>
+
+<body>
+<div class="d-flex">
+    <div class="main">
+        <main class="p-3">
+            <div class="container-fluid">
+                    {% if is_anonymous %}
+                        <p>You are viewing as an anonymous user. You have limited access.</p>
+                    {% else %}
+                        <p>You are logged in as a Common User (Student).</p>
+                    {% endif %}
+
+                    <div class="container text-center">
+                        <!-- Calendar Section -->
+                        <div class="container-fluid">
+                            <div class="calendar">
+                                <header>
+                                    <h3></h3>
+                                    <nav>
+                                        prev<button id="prev"></button>
+                                        <button id="next"></button>next
+                                    </nav>
+                                </header>
+                                <section>
+                                    <ul class="days">
+                                        <li>Sun</li>
+                                        <li>Mon</li>
+                                        <li>Tue</li>
+                                        <li>Wed</li>
+                                        <li>Thu</li>
+                                        <li>Fri</li>
+                                        <li>Sat</li>
+                                    </ul>
+                                    <ul class="dates"></ul>
+                                </section>
+                            </div>
+                        </div>
+
+                        <div class="button-container px-3 py-2" style="width: 200px;">
+                            <button id="add-event-btn" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addEventModal">
+                                <i class="bi bi-plus-lg"></i>
+                                <span class="sidebar-text ms-2">Add New Event</span>
+                            </button>
+                        </div>
+
+                        <!-- "My Events" Section -->
+                        <div class="mb-3 text-center">
+                            <h3>My Owned Events</h3>
+                            <div class="row mt-3" id="myEventsContainer">
+                                {% for event in my_events %}
+                                    <div class="col-md-4 mb-3 d-flex">
+                                            <div class="w-100 card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">{{ event.title }}</h5>
+                                                    <h6 class="card-subtitle mb-2 text-muted">{{ event.date }}</h6>
+                                                    <p class="card-text">{{ event.description }}</p>
+                                                    <a href="{% url 'event_detail' event.id %}" class="btn btn-primary me-2">View Details</a>
+                                                    <!-- Delete Button (Inside Event Card) -->
+                                                    <button class="btn btn-danger delete-btn" data-event-id="{{ event.id }}" data-bs-toggle="modal" data-bs-target="#deleteEventModal">
+                                                        Delete
+                                                    </button>
+
+                                                    <!-- Confirmation Modal -->
+                                                    <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="deleteEventModalLabel">Confirm Deletion</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    Are you sure you want to delete this event? This action cannot be undone.
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                    <button type="button" id="confirmDeleteEvent" class="btn btn-danger">Delete</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                    </div>
+                                {% empty %}
+                                    <p>No events found.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% if joined_events %}
+                        <div class="mb-3 text-center">
+                            <div>
+                                <h3>My Joined Events</h3>
+                            </div>
+                            <div class="row mt-5" id="joinedCardsContainer">
+                                {% for event in joined_events %}
+                                    <div class="col-md-4 mb-3 d-flex">
+                                            <div class="card w-100">
+                                                    <h5 class="card-title mt-3">{{ event.title }}</h5>
+                                                    <h6 class="card-subtitle mb-2 text-muted">{{ event.date }}</h6>
+                                                    <p class="card-text">{{ event.description }}</p>
+                                                    <div class="d-flex justify-content-center mb-3">
+                                                    {%if user in event.members.all %}
+                                                        <a href="{% url 'event_detail' event.id %}" class="btn btn-primary me-2">View Details</a>
+                                                        <!-- Leave Button -->
+                                                        <form action="{% url 'leave_event' event.id %}" method="post" style="display:inline;">
+                                                            {% csrf_token %}
+                                                            <button type="button" class="btn btn-danger leave-btn" data-event-id="{{ event.id }}" data-bs-toggle="modal" data-bs-target="#leaveEventModal-{{ event.id }}">
+                                                                Leave Event
+                                                            </button>
+                                                        </form>
+
+                                                        <!-- Leave Event Confirmation Modal -->
+                                                        <div class="modal fade" id="leaveEventModal-{{ event.id }}" tabindex="-1" aria-labelledby="leaveEventModalLabel-{{ event.id }}" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="leaveEventModalLabel-{{ event.id }}">Confirm Leave</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        Are you sure you want to leave this event? You may not be able to rejoin.
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" class="btn btn-danger" form="leaveEventForm-{{ event.id }}">Leave</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Hidden Leave Form -->
+                                                        <form id="leaveEventForm-{{ event.id }}" action="{% url 'leave_event' event.id %}" method="post">
+                                                            {% csrf_token %}
+                                                        </form>
+
+                                                    {% endif %}
+                                                    </div>
+                                            </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="mb-3 text-center">
+                            <div>
+                                <h3>All Events</h3>
+                            </div>
+                            <div class="row mt-5" id="eventCardsContainer">
+                                {% for event in all_events %}
+                                    <div class="col-md-4 mb-3 d-flex">
+                                            <div class="card w-100">
+                                                    <h5 class="card-title mt-3">{{ event.title }}</h5>
+                                                    <h6 class="card-subtitle mb-2 text-muted">{{ event.date }}</h6>
+                                                    <p class="card-text">{{ event.description }}</p>
+                                                    <div class="d-flex justify-content-center mb-3">
+                                                    {%if user in event.members.all %}
+                                                        <a href="{% url 'event_detail' event.id %}" class="btn btn-primary me-2">View Details</a>
+                                                    {% endif %}
+                                                    {% if user != event.user and user not in event.members.all and user not in event.requests.all%}
+                                                        {% csrf_token %}
+                                                    <button onclick="requestToJoin('{{ event.id }}')" class="btn btn-success btn-request">Request to Join</button>
+                                                    {% endif %}
+                                                    {% if user in event.requests.all %}
+                                                        <p class="btn btn-warning">Request Sent</p>
+                                                    {% endif %}
+                                                    </div>
+                                            </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </main>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEventModalLabel">Add New Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addEventForm">
+                        <div class="mb-3">
+                            <label for="eventTitle" class="form-label">Event Title</label>
+                            <input type="text" class="form-control" id="eventTitle" name="eventTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventDate" class="form-label">Event Date</label>
+                            <input type="date" class="form-control" id="eventDate" name="eventDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventDescription" class="form-label">Event Description</label>
+                            <textarea class="form-control" id="eventDescription" name="eventDescription" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Event</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for displaying event details -->
+    <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventDetailsModalLabel">Event Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="eventDetailsBody">
+                    <!-- Event details will be populated here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts should be at the end of the body -->
+<script src="{% static '/js/script.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    let eventIdToDelete = null;
+
+    // Add click event listener to delete buttons to open the modal
+    document.querySelectorAll('.delete-btn').forEach((button) => {
+        button.addEventListener('click', function () {
+            eventIdToDelete = this.getAttribute('data-event-id'); // Capture the event ID
+        });
+    });
+
+    // Add event listener to the confirmation button in the modal
+    const confirmDeleteButton = document.getElementById('confirmDeleteEvent');
+    if (confirmDeleteButton) {
+        confirmDeleteButton.addEventListener('click', function () {
+            if (eventIdToDelete !== null) {
+                fetch(`/events/delete_event/${eventIdToDelete}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then((response) => {
+                        if (response.ok) {
+                            location.reload(); // Reload the page to update UI
+                        } else {
+                            return response.json().then((data) => {
+                                alert(data.error || 'Failed to delete event.');
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again later.');
+                    });
+
+                eventIdToDelete = null; // Reset after deletion attempt
+            }
+
+            $('#deleteEventModal').modal('hide'); // Close the modal
+        });
+    }
+});
+
+// Helper function to retrieve CSRF token from cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === name + '=') {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+</script>
+<script>
+   function requestToJoin(eventId) {
+        fetch("{% url 'request_to_join' 0 %}".replace('0', eventId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'), // Ensure you're sending CSRF token for security
+            },
+            body: JSON.stringify({ 'event_id': eventId })  // Sending the event ID
+        })
+        .then(response => response.json())  // Parse JSON from the response
+        .then(data => {
+            if (data.success) {
+                // Display success message (can also update the UI instead of an alert)
+                alert('Request to join event has been sent!');
+                window.location.href = "{% url 'dashboard' %}";
+            } else {
+                alert(data.message);  // Show the error message if any
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again later.');
+        });
+    }
+
+
+    // Helper function to get the CSRF token from the cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+
+
+</script>
+</body>
+{% endblock %}

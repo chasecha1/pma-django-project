@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+{% extends 'ra_pma/base.html' %}
+{% block title %}Resources{% endblock %}
+{% load static %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static '/css/resources.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Resources</h1>
+
+        <div class="row mt-4">
+            <!-- Personal Safety Section -->
+            <div class="col-md-6">
+                <div class="p-3 border rounded shadow-sm">
+                    <h2>Personal Safety</h2>
+                    <ul class="resources-list">
+                        <li><span class="item-name">EMERGENCY:</span> 911</li>
+                        <li><span class="item-name">Student Health:</span> 434-924-8845</li>
+                        <li><span class="item-name">Sexual Assault Resource Agency (SARA):</span> 434-977-7273</li>
+                        <li><span class="item-name">UPD (Non-emergency):</span> 434-924-7166</li>
+                        <li><span class="item-name">Women's Center:</span> 434-982-2774</li>
+                        <li><span class="item-name">Poison Control:</span> 800-222-1222</li>
+                        <li><span class="item-name">Counseling And Psychological Services (CAPS):</span> 434-243-5150</li>
+                        <li><span class="item-name">Maintenance Emergencies:</span> 434-924-3053</li>
+                        <li><span class="item-name">SafeRide:</span> 434-242-1122</li>
+                        <li><span class="item-name">Yellow Cab:</span> 434-295-4131</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Helpful Items Section -->
+            <div class="col-md-6">
+                <div class="p-3 border rounded shadow-sm">
+                    <h2>Helpful Items</h2>
+                    <ul class="resources-list">
+                        <li><span class="item-name">TransLoc:</span> A real-time bus tracking system that also provides access to SafeRide, a late-night transportation service for students.</li>
+                        <li><span class="item-name">Grubhub:</span> A food delivery and pick-up platform that integrates with campus dining for meal exchanges and flexible payment options.</li>
+                        <li><span class="item-name">Speed Queen:</span> A laundry management app that allows you to check machine availability, start laundry cycles, and monitor progress remotely.</li>
+                        <li><span class="item-name">Mobil ID:</span> A digital ID app that provides convenient access to campus buildings and resources using your phone.</li>
+                        <li><span class="item-name">Timely Care:</span> A 24/7 telehealth service offering mental health support, counseling, and other wellness resources.</li>
+                        <li><span class="item-name">CourseForum:</span> A platform where students can view and share class and professor ratings, GPA averages, and course feedback.</li>
+                        <li><span class="item-name">Register bike/scooter:</span> A service through UPD (University Police Department) to register your bike or scooter for added security and recovery in case of theft.</li>
+                        <li><span class="item-name">Wahoo Welcome Schedule: (Netbadge Login Required)</span>
+                            <a id="resourceLink" href="https://orientation.virginia.edu/2024-wahoo-welcome-schedule" target="_blank">
+                                orientation.virginia.edu/2024-wahoo-welcome-schedule
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional: Add Bootstrap JS and Popper.js if you need Bootstrap's JavaScript features -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+</body>
+{% endblock %}

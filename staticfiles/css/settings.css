@@ -1,0 +1,43 @@
+h1{
+    color: black;
+}
+
+.container mt-5 {
+    border-radius: 8px;
+}
+
+.setting-item {
+    margin-bottom: 20px;
+}
+
+main {
+    background-color: var(--main-bg-color);
+}
+
+.color-picker {
+    display: flex;
+    flex-direction: column;
+}
+
+.color-picker label {
+    margin-right: 10px;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.custom-btn, .custom-btn-success {
+    background-color: #232D4B;
+    color: white;
+    border: none;
+}
+
+
+.custom-btn:hover, .custom-btn-success:hover {
+    background-color: #E57200;
+    color: white;
+}

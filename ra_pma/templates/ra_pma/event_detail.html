@@ -1,0 +1,19 @@
+<h1>{{ event.title }}</h1>
+<p>{{ event.description }}</p>
+<p>Date: {{ event.date }}</p>
+
+<h2>Uploaded Files:</h2>
+<ul>
+    {% for file in files %}
+        <li>{{ file.name }}</li>
+    {% empty %}
+        <li>No files uploaded.</li>
+    {% endfor %}
+</ul>
+
+<h2>Upload a File:</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ file_form.as_p }}
+    <button type="submit">Upload</button>
+</form>
